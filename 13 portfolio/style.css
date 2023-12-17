@@ -1,0 +1,238 @@
+
+ .grid-container{
+    display: grid;
+    grid-template:.5fr .8fr 1fr .5fr 0.2fr / 1fr 2fr 2fr ;
+    font-family: 'Source Code Pro',monospace;
+} 
+
+
+*{
+    background-color: #feff86;
+    margin: 1rem;
+}
+div{
+    display: block;
+}
+.profile-left{
+    grid-row: span 5; 
+}
+.sticky-container{
+    top: 17px;
+    align-self: center;
+}
+.flex-container{
+   display: flex; 
+    flex-direction: column;
+    align-items: center;
+}
+.profile-img {
+    height: 17rem;
+    border-radius: 50%;
+    margin: 0;
+    margin-bottom: 17px;
+}
+h3{
+    display: block;
+    font-size: 1.17em;
+    margin-block-start: 1em;
+    margin-block-end: 1em;
+    margin-inline-start: 0px;
+    margin-inline-end: 0px;
+    font-weight: bold;
+}
+a:-webkit-any-link {
+    color: -webkit-link;
+    cursor: pointer;
+    text-decoration: underline;
+}
+a > img{
+    height: 2rem;
+    width: 100%;
+    margin-top: 0px;
+    margin-bottom: 0px;
+    margin-left: 10px;
+    display: flex;
+}
+
+img{
+    overflow-clip-margin: content-box;
+    overflow: clip;
+}
+.name-presentation {
+    grid-column: span 2;
+    font-family: 'Yeseva One', serif;
+    font-size: 1.7rem;
+    color: #181818;
+    text-shadow: #f40303 2px 0, #000000 -2px 0;
+}
+h1 {
+    display: block;
+    font-size: 2em;
+    margin-block-start: 0.67em;
+    margin-block-end: 0.67em;
+    margin-inline-start: 0px;
+    margin-inline-end: 0px;
+    font-weight: bold;
+}
+h1 > span {
+    margin-left: 0;
+    color: #FEFF86;
+}
+h2 {
+    display: block;
+    font-size: 1.5em;
+    margin-block-start: 0.83em;
+    margin-block-end: 0.83em;
+    margin-inline-start: 0px;
+    margin-inline-end: 0px;
+    font-weight: bold;
+}
+hr {
+    border: none;
+    border-top: 1px solid black;
+    border-bottom: 5px solid black;
+    height: 7px;
+    display: block;
+    unicode-bidi: isolate;
+    margin-block-start: 0.5em;
+    margin-block-end: 0.5em;
+    margin-inline-start: auto;
+    margin-inline-end: auto;
+    overflow: hidden;
+    border-style: inset;
+    border-width: 1px;
+}
+p{
+    display: block;
+    margin-block-start: 1em;
+    margin-block-end: 1em;
+    margin-inline-start: 0px;
+    margin-inline-end: 0px;
+}
+.grid-table-1 {
+    display: grid;
+    grid-template: repeat(9, 1fr) / 1fr auto;
+    margin: 0;
+}
+.grid-table-1 > p {
+    margin-bottom: 17px;
+    margin-top: 0;
+}
+.grid-table-2 {
+    display: grid;
+    grid-template: repeat(4, 1fr) / 1fr auto;
+    margin: 0;
+}
+.grid-table-2 > p {
+    margin-bottom: 17px;
+    margin-top: 0;
+}
+.hobbies {
+    grid-column: span 2;
+}
+.footer {
+    grid-column: span 2;
+}
+#thin-line {
+    border: none;
+    border-top: 1px solid black;
+}
+script {
+    display: none;
+}
+/* Adjustments for smaller screens */
+@media only screen and (max-width: 768px) {
+    .grid-container {
+      grid-template: 1fr 0.8fr 1fr 0.5fr 0.2fr / 1fr;
+    }
+    
+    .profile-left {
+      display: flex;
+      justify-content: center;
+    }
+    
+    .sticky-container {
+      position: sticky;
+      top: 0;
+    }
+    
+    .flex-container {
+      flex-direction: row;
+      align-items: flex-start;
+    }
+    
+    .profile-img {
+      height: 10rem;
+    }
+    
+    .grid-item {
+      margin: 0.5rem;
+    }
+    
+    .name-presentation h1 {
+      font-size: 1.2rem;
+    }
+    
+    .experience h2,
+    .education h2,
+    .skills h2,
+    .languages h2,
+    .hobbies h2,
+    .footer h2 {
+      font-size: 1.2rem;
+    }
+    
+    .grid-table-1 p,
+    .grid-table-2 p {
+      font-size: 0.9rem;
+    }
+  }
+  
+  /* Adjustments for medium screens */
+  @media only screen and (min-width: 768px) and (max-width: 1024px) {
+    .grid-container {
+      grid-template: 1fr 0.8fr 1fr 0.5fr 0.2fr / 1fr 1fr;
+    }
+    
+    .profile-left {
+      display: flex;
+      justify-content: center;
+    }
+    
+    .sticky-container {
+      position: sticky;
+      top: 0;
+    }
+    
+    .flex-container {
+      flex-direction: row;
+      align-items: flex-start;
+    }
+    
+    .profile-img {
+      height: 13rem;
+    }
+    
+    .grid-item {
+      margin: 0.8rem;
+    }
+    
+    .name-presentation h1 {
+      font-size: 1.5rem;
+    }
+    
+    .experience h2,
+    .education h2,
+    .skills h2,
+    .languages h2,
+    .hobbies h2,
+    .footer h2 {
+      font-size: 1.5rem;
+    }
+    
+    .grid-table-1 p,
+    .grid-table-2 p {
+      font-size: 1.1rem;
+    }
+  }
+ 
