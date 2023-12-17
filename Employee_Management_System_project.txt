@@ -1,0 +1,2001 @@
+Project 
+========
+Title		:	Employee Management System 
+
+Environments	:	Java 8, Spring Boot, ReactJs and MySQL.
+
+Tools		:	POSTMAN , GIT/GITHUB
+
+IDE's		:	VSC and STS
+
+Client		:	Coderu 
+
+Duration	:	1 Month 
+
+Team Size	:	4 members
+
+
+=============================================================
+		Employee Management System 
+=============================================================
+
+Project structure :
+
+   backend
+	|
+	|--src/main/java
+		|
+		|---com.ihub.www 
+			|
+			|---BackendApplication.java
+		|
+		|---com.ihub.www.Model
+			|
+			|---Employee.java
+		|
+		|---com.ihub.www.repo
+			|
+			|---EmployeeRepository.java
+		|
+		|---com.ihub.www.controller
+			|
+			|---EmployeeController.java
+		|
+		|---com.ihub.www.service
+			|
+			|---EmployeeService.java
+		|
+		|---com.ihub.www.exception
+			|
+			|---ResourceNotFoundException.java 
+	|
+	|--src/main/resources
+			|
+			|---application.properties 
+
+
+step1:
+-----
+	Create a spring boot starter project i.e backend.
+	ex:
+		starters:
+				spring web 
+				spring data jpa
+				lombok
+				mysql driver
+
+step2:
+-----
+	Create a "employee_management_system" schema in mysql database.
+	ex:
+		MYSQL> create schema employee_management_system;
+
+step3:
+------
+	Switch to  employee_management_system schema.
+	ex:
+		MYSQL> use employee_management_system
+
+step4:
+------
+	Create a employees table inside mysql database and insert few records.
+	ex:
+		create table employees(id int(3) AUTO_INCREMENT ,
+					first_name varchar(10),
+					 last_name varchar(10),
+					 email varchar(15),
+					 primary key(id));
+
+	insert into employees(id,first_name,last_name,email) 
+		values(1,'Alan','Morries','alan@gmail.com');
+
+		insert into employees(id,first_name,last_name,email) 
+			values(2,'Erick','Anderson','erick@zoho.com');
+
+		select * from employees;
+
+		commit;
+
+step5:
+-----
+	Configure server port and mysql driver in application.properties file.
+	ex:
+	application.properties	
+	----------------------	
+	server.port=9090
+
+	spring.datasource.driverClassName=com.mysql.cj.jdbc.Driver
+	spring.datasource.url=jdbc:mysql://localhost:3306/employee_management_system
+	spring.datasource.username=root
+	spring.datasource.password=root
+
+	
+	spring.jpa.hibernate.ddl-auto=update
+	spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQL5Dialect
+
+
+step6:
+-----
+	Create a "Employee" model class inside "com.ihub.www.model" package.
+	ex:
+	Employee.java
+	------------
+	package com.ihub.www.model;
+
+	import jakarta.annotation.Generated;
+	import jakarta.persistence.Column;
+	import jakarta.persistence.Entity;
+	import jakarta.persistence.GeneratedValue;
+	import jakarta.persistence.GenerationType;
+	import jakarta.persistence.Id;
+	import jakarta.persistence.Table;
+	import lombok.AllArgsConstructor;
+	import lombok.Data;
+	import lombok.NoArgsConstructor;
+
+	@Entity
+	@Table(name="employees")
+	@Data
+	@NoArgsConstructor
+	@AllArgsConstructor
+	public class Employee 
+	{
+		@Id
+		@GeneratedValue(strategy = GenerationType.IDENTITY)
+		private long id;
+	
+		@Column
+		private String firstName;
+		@Column
+		private String lastName;
+		@Column
+		private String email;	
+	}
+	
+step7:
+------
+	Create a EmployeeRepository inside "com.ihub.www.repo" package. 
+	ex:
+	EmployeeRepository.java
+	------------------------
+	package com.ihub.www.repo;
+
+	import org.springframework.data.jpa.repository.JpaRepository;
+	import org.springframework.stereotype.Repository;
+	import com.ihub.www.model.Employee;
+
+	@Repository
+	public interface EmployeeRepository extends JpaRepository<Employee, Long>
+	{
+
+	}
+
+step8:
+--------
+	Create a ResourceNotFoundException inside "com.ihub.www.exception" package.
+	ex:
+	ResourceNotFoundException.java
+	-----------------------------
+	package com.ihub.www.exception;
+
+	import org.springframework.http.HttpStatus;
+	import org.springframework.web.bind.annotation.ResponseStatus;
+
+	@ResponseStatus(value =HttpStatus.NOT_FOUND)
+	public class ResourceNotFoundException extends RuntimeException
+	{
+
+		private static final long serialVersionUID = 1L;
+	
+		public ResourceNotFoundException(String message)
+		{
+			super(message);
+		}
+	}
+
+step9:
+------
+	Create a EmployeeService inside "com.ihub.www.service" package.
+	ex:
+	EmployeeService.java
+	--------------------
+	package com.ihub.www.service;
+
+	import java.util.List;
+
+	import org.springframework.beans.factory.annotation.Autowired;
+	import org.springframework.stereotype.Service;
+
+	import com.ihub.www.model.Employee;
+	import com.ihub.www.repo.EmployeeRepository;
+
+	@Service
+	public class EmployeeService 
+	{
+		@Autowired
+		EmployeeRepository employeeRepository;
+	
+		public List<Employee> getAllEmployees()
+		{
+			return employeeRepository.findAll();
+		}
+	}
+	
+step10:
+------
+	Create a EmployeeController inside "com.ihub.www.controller" package.
+	ex:
+	EmployeeController.java
+	----------------------
+	package com.ihub.www.controller;
+
+	import java.util.List;
+
+	import org.springframework.beans.factory.annotation.Autowired;
+	import org.springframework.web.bind.annotation.GetMapping;
+	import org.springframework.web.bind.annotation.RequestMapping;
+	import org.springframework.web.bind.annotation.RestController;
+
+	import com.ihub.www.model.Employee;
+	import com.ihub.www.service.EmployeeService;
+
+	@RestController
+	@RequestMapping("/api/v1/")
+	public class EmployeeController 
+	{
+		@Autowired
+		EmployeeService employeeService;
+	
+		@GetMapping("/employees")
+		public List<Employee> getAllEmployees()
+		{
+			return employeeService.getAllEmployees();
+		}
+	}
+
+step11:
+------
+	Run the spring boot starter project.
+	ex:
+		right click to springboot-backend project --> 
+		run as --> spring boot App
+
+step12:
+-------
+	Test the application by using below request url
+	in postman tool.
+	ex:
+	Method :	Request 
+
+	GET		http://localhost:9090/api/v1/employees 
+
+
+<><><><><><><><><><>
+>>> ReactProject <<<
+<><><><><><><><><><>
+
+react_frontend
+|
+|---node_modules
+|
+|------public
+|	|
+	|--favicon.ico
+	|--index.html
+	|--manifest.json
+|
+|------src
+	|
+	|---index.js
+	|---index.css
+	|
+	|---components
+		|
+		|---ListEmployeeComponent.js
+	|
+	|---App.js
+	|---App.css
+	|---App.test.js
+|
+|-----package.json
+|-----README.md
+
+
+step13:
+-------
+	Create a "Reactprojects" folder.
+
+step14:
+------
+	Create a react project i.e react_frontend.
+	ex:
+		Reactprojects> npx create-react-app react_frontend	
+
+step15:
+------
+	Now open VSC code editor from Reactproject folder.
+	ex:
+		Reactprojects> code . 
+
+step16:
+------
+	Move/Switch to react_frontend project.
+	ex:
+		Reactprojects> cd  react_frontend
+
+step17:
+-----
+	Run the react application.
+	ex:
+		Reactprojects/react_frontend> npm start 
+
+
+step18:
+-----
+	Open the terminal from VSC code editor.
+	
+
+step19:
+-------
+	Install Bootstrap dependency.
+	ex:	
+		Reactprojects> cd react-frontend
+		
+		Reactprojects/react-frontend> npm install bootstrap
+		
+	Note:
+	------
+		import bootstrap in index.js file.			
+		ex:
+		import '../node_modules/bootstrap/dist/css/bootstrap.css';
+
+step20:
+-------
+	Create a "components" folder inside "src" folder.
+
+step21:
+------
+	Install "ES7 React/Redux/styled-component" extension from VSC editor.
+
+step22:
+------
+	Create a ListEmployeeComponent.js file inside "src/components" folder.
+	using below shortcut.
+	ex:
+		rcc 
+
+	ListEmployeeComponent.js
+	-------------------------
+import React, { Component } from 'react'
+
+export default class ListEmployeeComponent extends Component {
+    constructor(props)
+    {
+        super(props);
+
+        this.state={
+            employees:[]
+        }
+    }
+  render() {
+    return (
+      <div>
+            <h2 className='text-center'>Employee List</h2>
+            <div className='row'>
+                <table className='table  table-striped table-bordered'>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>FirstName</th>
+                            <th>LastName</th>
+                            <th>Email</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {
+                            this.state.employees.map(
+                                employee=>
+                                <tr key={employee.id}>
+                                      <td>{employee.firstName}</td>
+                                      <td>{employee.lastName}</td>
+                                      <td>{employee.email}</td>  
+                                </tr>
+                            )
+                        }
+                    </tbody>
+                </table>
+            </div>        
+      </div>
+    )
+  }
+}
+
+step23:
+-------
+	import "ListEmployeeComponent" inside "App.js" file.
+	ex:
+		
+	import logo from './logo.svg';
+	import './App.css';
+	import ListEmployeeComponent from './components/ListEmployeeComponent'
+	function App() {
+  	return (
+   	 	<div className="container">
+      			<ListEmployeeComponent/>
+    		</div>
+  		);
+	}
+	export default App;
+
+Note:
+------
+	Now connect react with spring boot.
+
+step24:
+-------
+	Install axios to connect react with spring boot.
+	ex:
+		Reactprojects/react-frontend> npm install axios --save
+
+
+step25:
+------
+	Create a EmployeeService.js file inside "src/services" folder.
+
+	EmployeeService.js
+	-----------------
+	import axios from 'axios';
+
+	const EMPLOYEE_API_BASE_URL="http://localhost:9090/api/v1/employees";
+
+	class EmployeeService{
+
+ 	   	getEmployees(){
+        	return axios.get(EMPLOYEE_API_BASE_URL);
+    		}
+	}
+	export default new EmployeeService();
+
+step26:
+-------
+	Add componentDidMount() method inside ListEmployeeComponent.js to call api.
+	ex:
+	ListEmployeeComponent.js
+	------------------------
+	import React, { Component } from 'react'
+	import EmployeeService from '../services/EmployeeService';
+
+	export default class ListEmployeeComponent extends Component {
+    	constructor(props)
+    	{
+        	super(props);
+
+ 	       this.state={
+        	    employees:[]
+        	}
+    	}
+  
+    	componentDidMount(){
+      		  EmployeeService.getEmployees().then((res)=>
+        	{
+            	this.setState({employees:res.data})
+        	})
+   	 }
+
+  	render() {
+    		return (
+      		<div>
+            	<h2 className='text-center'>Employee List</h2>
+            	<div className='row'>
+                	<table className='table  table-striped table-bordered'>
+                    	<thead>
+                        	<tr>
+                            	<th>ID</th>
+                            	<th>FirstName</th>
+                            	<th>LastName</th>
+                            	<th>Email</th>
+                           	 <th>Actions</th>
+                        	</tr>
+                    	</thead>
+                    	<tbody>
+                        	{
+                            	this.state.employees.map(
+                                	employee=>
+                                	<tr key={employee.id}>
+					<td>{employee.id}</td>
+                                      	<td>{employee.firstName}</td>
+                                      	<td>{employee.lastName}</td>
+                                      	<td>{employee.email}</td>  
+                                	</tr>
+                            	)
+                        	}
+                    	</tbody>
+                	</table>
+            	</div>        
+      	</div>
+    	)
+  	}
+	}
+	
+
+step27:
+-----
+	Add @CrossOrigin annotation in a EmployeeController class.
+
+	EmployeeController.java
+	-------------------------
+	package com.ihub.www.controller;
+
+	import java.util.List;
+
+	import org.springframework.beans.factory.annotation.Autowired;
+	import org.springframework.web.bind.annotation.CrossOrigin;
+	import org.springframework.web.bind.annotation.GetMapping;
+	import org.springframework.web.bind.annotation.RequestMapping;
+	import org.springframework.web.bind.annotation.RestController;
+	import com.ihub.www.model.Employee;
+	import com.ihub.www.service.EmployeeService;
+
+	@CrossOrigin(origins = "http://localhost:3000")
+	@RestController
+	@RequestMapping("/api/v1/")
+	public class EmployeeController 
+	{
+		@Autowired
+		EmployeeService employeeService;
+	
+		@GetMapping("/employees")
+		public List<Employee> getAllEmployees()
+		{
+			return employeeService.getAllEmployees();
+		}
+	}
+
+step28:
+-------
+	Relaunch the spring boot starter project and react project and test the 
+	application.
+step29:
+--------
+	Create a HeaderComponent.js inside "src/components" folder.
+	ex:
+	HeaderComponent.js
+	---------------------
+ 	import React, { Component } from 'react'
+
+	export default class HeaderComponent extends Component {
+  	render() {
+    	return (
+      	<div>
+            	<header>
+                <nav className='navbar navbar-expand-md navbar-dark bg-dark'>
+                	    <div>
+          <a href="" className='navbar-brand '>Employee Management Application</a>
+                    	</div>
+                	</nav>
+         	   </header>
+      	</div>
+    	)
+  	}
+	}
+
+
+step30:
+--------
+	Create a FooterComponent.js inside "src/components" folder.
+	ex:
+	FooterComponent.js
+	-----------------
+	import React, { Component } from 'react'
+
+	export default class FooterComponent extends Component {
+ 	 render() {
+    	return (
+      	<div>
+        	<footer className='footer'>
+       <span className='text-muted'>All Right Reserved 2023 &copy;NIYAZ_SIR </span>
+        </footer>
+     	 </div>
+    	)
+  	}
+	}
+
+step31:
+---------
+	Now add footer styles in App.css file.
+	ex:
+	App.css
+	--------
+	.footer
+	{
+  	position:absolute;
+  	bottom: 0;
+  	width: 100%;
+  	height: 30px;
+  	background-color: black;
+  	text-align: center;
+  	color: white;
+  	line-height: 20px;
+	}
+
+step32:
+------
+	Now call "HeaderComponent" and "FooterComponent" from App.js file.
+	ex:
+	App.js
+	-------
+	import logo from './logo.svg';
+	import '../App.css';
+	import ListEmployeeComponent from './components/ListEmployeeComponent'
+	import HeaderComponent from './components/HeaderComponent';
+	import FooterComponent from './components/FooterComponent';
+	function App() {
+  	return (
+    	<div>
+
+	    <HeaderComponent/>
+
+	    <div className="container">
+      		<ListEmployeeComponent/>
+     	    </div>
+    
+    	<FooterComponent/>
+
+ 	   </div>
+  	);
+	}
+
+	export default App;
+
+step33:
+--------
+	Install react Router.
+	ex:
+	 Reactprojects/react-frontend>npm install react-router-dom 
+
+step34:
+------
+	Configure the routing inside App.js file.
+	ex:
+	App.js
+	---------
+	import ListEmployeeComponent from './components/ListEmployeeComponent'
+	import HeaderComponent from './components/HeaderComponent';
+	import FooterComponent from './components/FooterComponent';
+	import { BrowserRouter as Router,Route,Routes } from 'react-router-dom';
+	function App() {
+  	return (
+    	<div>
+        
+      	<HeaderComponent/>
+        <Router>
+
+      	<div className="container">
+          <Routes>
+              <Route exact path="/" Component={ListEmployeeComponent}></Route>
+              <Route path="/employees" Component={ListEmployeeComponent}></Route>
+          </Routes>	
+      	</div>
+        </Router>
+      	<FooterComponent/>
+    
+    	
+
+    	</div>
+	  );
+	}
+
+	export default App;
+
+
+step35:
+------
+	Test the routing files.
+	ex:
+		http://localhost:3000/
+		http://localhost:3000/employees
+
+step36:
+-------
+	Create a post method inside EmployeeController.java file.
+	
+Employee Controller.java
+-------------------------
+package com.ihub.www.controller;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.ihub.www.model.Employee;
+import com.ihub.www.service.EmployeeService;
+
+@CrossOrigin(origins = "http://localhost:3000")
+@RestController
+@RequestMapping("/api/v1/")
+public class EmployeeController 
+{
+	@Autowired
+	EmployeeService employeeService;
+	
+	@GetMapping("/employees")
+	public List<Employee> getAllEmployees()
+	{
+		return employeeService.getAllEmployees();
+	}
+	
+	@PostMapping("/employees")
+	public Employee createEmployee(@RequestBody Employee employee)
+	{
+		return employeeService.createEmployee(employee);
+	}
+}
+
+step36:
+-------
+	Create a service method inside EmployeeService.java file.
+	
+EmployeeService.java
+-------------------
+package com.ihub.www.service;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestBody;
+
+import com.ihub.www.model.Employee;
+import com.ihub.www.repo.EmployeeRepository;
+
+@Service
+public class EmployeeService 
+{
+	@Autowired
+	EmployeeRepository employeeRepository;
+	
+	public List<Employee> getAllEmployees()
+	{
+		return employeeRepository.findAll();
+	}
+	
+	public Employee createEmployee(Employee employee)
+	{
+		return employeeRepository.save(employee);
+	}
+}
+
+step37:
+-------
+	Relaunch the spring boot starter project.
+
+step38:
+-------
+	Create a "CreateEmployeeComponent.js" file inside "src/components" folder.
+ 	ex:
+	
+CreateEmployeeComponent.js
+------------------------
+export default function CreateEmployeeComponent() {
+ 
+    return (
+      <div>
+        <h1>Create Employee</h1>
+      </div>
+    )
+
+}
+
+step39:
+------
+	Add CreateEmployeeComponent.js file for routing inside App.js.
+
+App.js
+--------
+import logo from './logo.svg';
+import './App.css';
+import ListEmployeeComponent from './components/ListEmployeeComponent'
+import HeaderComponent from './components/HeaderComponent';
+import FooterComponent from './components/FooterComponent';
+import { BrowserRouter as Router,Route,Routes,Link } from 'react-router-dom';
+import CreateEmployeeComponent from './components/CreateEmployeeComponent';
+function App() {
+  return (
+    <div>
+     <Router>
+      <HeaderComponent/>
+      <div className="container">
+        <Routes>
+            <Route exact path="/" element={<ListEmployeeComponent/>}></Route>
+            <Route path="/employees" element={<ListEmployeeComponent/>}></Route>
+            <Route path="/add-employee" element={<CreateEmployeeComponent/>}></Route>
+        </Routes>
+      </div>
+
+      <FooterComponent/>
+    
+    </Router> 
+
+    </div>
+  );
+}
+
+export default App;
+
+
+step40:
+------
+	Create a  add employee button inside "ListEmployeeComponent.js" file.
+
+ListEmployeeComponent.js
+--------------------------
+import React, { Component } from 'react'
+import EmployeeService from '../services/EmployeeService';
+import {Link } from 'react-router-dom';
+export default class ListEmployeeComponent extends Component {
+
+     
+
+    constructor(props)
+    {
+        super(props);
+
+        this.state={
+            employees:[]
+        }
+     
+    }
+  
+  
+
+    componentDidMount(){
+        EmployeeService.getEmployees().then((res)=>
+        {
+            this.setState({employees:res.data})
+        })
+    }
+
+
+  render() {
+    return (
+      <div>
+            <h2 className='text-center'>Employee List</h2>
+
+          
+            <div className='row'>       
+            <Link to="/add-employee" className='btn btn-outline-primary mt-4 w-100'>Add Employee</Link>    
+   
+                <table className='table  table-striped table-bordered'>
+                    <thead>
+                        <tr>
+                          
+                            <th>FirstName</th>
+                            <th>LastName</th>
+                            <th>Email</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {
+                            this.state.employees.map(
+                                employee=>
+                                <tr key={employee.id}>
+                                      <td>{employee.firstName}</td>
+                                      <td>{employee.lastName}</td>
+                                      <td>{employee.email}</td> 
+                                      
+                                </tr>
+                            )
+                        }
+                    </tbody>
+                </table>
+            </div>        
+      </div>
+    )
+  }
+}
+
+step41:
+--------
+	Now create a form to add a employee in CreateEmployeeComponent.js file.
+
+CreateEmployeeComponent.js
+---------------------------
+import React, { Component, useState } from 'react'
+import { useNavigate } from 'react-router-dom';
+import EmployeeService from '../services/EmployeeService';
+
+export default function CreateEmployeeComponent()
+{
+  
+    let navigate = useNavigate();
+    
+    const [employee,setEmployee]=useState({
+        firstName:"",
+        lastName:"",
+        email:""
+      })
+
+
+  const handleClick=(e)=>{
+    const name=e.target.name;
+    const value=e.target.value;
+    setEmployee({... employee,[name]:value});
+  }    
+
+  const saveHandler=(e)=>
+  {
+      e.preventDefault();
+      console.log("employee =>"+JSON.stringify(employee));
+     
+  }
+
+  
+  const cancelHandler=(e)=>
+  {
+    navigate('/employees');
+  }
+ 
+  
+    return (
+      <div className="container mt-3">
+          <div className="row">
+            <div className="card col-md-6 offset-md-3 offset-md-3">
+              <h3 className="text-center">Add Employee</h3>
+              <div className="card-body">
+                <form>
+                  <div className="form-group my-2">
+                    <label>First Name:</label>
+                    <input placeholder="First Name" name="firstName" className="form-control"
+                           value={employee.firstName} onChange={handleClick}/>
+                  </div>
+                  <div className="form-group my-2">
+                    <label>Last Name:</label>
+                    <input placeholder="Last Name" name="lastName" className="form-control"
+                           value={employee.lastName} onChange={handleClick}/>
+                  </div>
+
+                  <div className="form-group my-2">
+                    <label>Email:</label>
+                    <input placeholder="Email" name="email" className="form-control"
+                           value={employee.email} onChange={handleClick}/>
+                  </div>
+                  <button className='btn btn-success' onClick={saveHandler}>save</button>
+                  <button className='btn btn-danger' onClick={cancelHandler} style={{marginLeft:"10px"}}>cancel</button>
+                </form>
+              </div>
+            </div>
+          </div>  
+      </div>
+
+    )
+  }
+step41:
+--------
+	Now create a form to add a employee in CreateEmployeeComponent.js file.
+
+CreateEmployeeComponent.js
+---------------------------
+import React, { Component, useState } from 'react'
+import { useNavigate } from 'react-router-dom';
+import EmployeeService from '../services/EmployeeService';
+
+export default function CreateEmployeeComponent()
+{
+  
+    let navigate = useNavigate();
+    
+    const [employee,setEmployee]=useState({
+        firstName:"",
+        lastName:"",
+        email:""
+      })
+
+
+  const handleClick=(e)=>{
+    const name=e.target.name;
+    const value=e.target.value;
+    setEmployee({... employee,[name]:value});
+  }    
+
+  const saveHandler=(e)=>
+  {
+      e.preventDefault();
+      console.log("employee =>"+JSON.stringify(employee));
+     
+  }
+
+  
+  const cancelHandler=(e)=>
+  {
+    navigate('/employees');
+  }
+ 
+  
+    return (
+      <div className="container mt-3">
+          <div className="row">
+            <div className="card col-md-6 offset-md-3 offset-md-3">
+              <h3 className="text-center">Add Employee</h3>
+              <div className="card-body">
+                <form>
+                  <div className="form-group my-2">
+                    <label>First Name:</label>
+                    <input placeholder="First Name" name="firstName" className="form-control"
+                           value={employee.firstName} onChange={handleClick}/>
+                  </div>
+                  <div className="form-group my-2">
+                    <label>Last Name:</label>
+                    <input placeholder="Last Name" name="lastName" className="form-control"
+                           value={employee.lastName} onChange={handleClick}/>
+                  </div>
+
+                  <div className="form-group my-2">
+                    <label>Email:</label>
+                    <input placeholder="Email" name="email" className="form-control"
+                           value={employee.email} onChange={handleClick}/>
+                  </div>
+                  <button className='btn btn-success' onClick={saveHandler}>save</button>
+                  <button className='btn btn-danger' onClick={cancelHandler} style={{marginLeft:"10px"}}>cancel</button>
+                </form>
+              </div>
+            </div>
+          </div>  
+      </div>
+
+    )
+  }
+
+
+
+step42:
+-------
+	Now goto EmployeeService inside "src/service" folder and add below code.
+
+EmployeeService.js
+-----------------
+import axios from 'axios';
+
+const EMPLOYEE_API_BASE_URL="http://localhost:9090/api/v1/employees";
+
+class EmployeeService{
+
+    getEmployees(){
+        return axios.get(EMPLOYEE_API_BASE_URL);
+    }
+
+    createEmployee(employee)
+    {
+         return axios.post(EMPLOYEE_API_BASE_URL,employee);   
+    }
+}
+export default new EmployeeService();	
+
+step43:
+--------
+	Now call createEmployeeComponent() method inside saveHandler() of CreateEmployeeComponent.
+
+CreateEmployeeComponent.js
+-------------------------
+import React, { Component, useState } from 'react'
+import { useNavigate } from 'react-router-dom';
+import EmployeeService from '../services/EmployeeService';
+
+export default function CreateEmployeeComponent()
+{
+  
+    let navigate = useNavigate();
+    
+    const [employee,setEmployee]=useState({
+        firstName:"",
+        lastName:"",
+        email:""
+      })
+
+
+  const handleClick=(e)=>{
+    const name=e.target.name;
+    const value=e.target.value;
+    setEmployee({... employee,[name]:value});
+  }    
+
+  const saveHandler=(e)=>
+  {
+      e.preventDefault();
+      console.log("employee =>"+JSON.stringify(employee));
+      EmployeeService.createEmployee(employee).then(res=>
+        {
+          navigate('/employees');
+        })
+  }
+
+  
+  const cancelHandler=(e)=>
+  {
+    navigate('/employees');
+  }
+ 
+  
+    return (
+      <div className="container mt-3">
+          <div className="row">
+            <div className="card col-md-6 offset-md-3 offset-md-3">
+              <h3 className="text-center">Add Employee</h3>
+              <div className="card-body">
+                <form>
+                  <div className="form-group my-2">
+                    <label>First Name:</label>
+                    <input placeholder="First Name" name="firstName" className="form-control"
+                           value={employee.firstName} onChange={handleClick}/>
+                  </div>
+                  <div className="form-group my-2">
+                    <label>Last Name:</label>
+                    <input placeholder="Last Name" name="lastName" className="form-control"
+                           value={employee.lastName} onChange={handleClick}/>
+                  </div>
+
+                  <div className="form-group my-2">
+                    <label>Email:</label>
+                    <input placeholder="Email" name="email" className="form-control"
+                           value={employee.email} onChange={handleClick}/>
+                  </div>
+                  <button className='btn btn-success' onClick={saveHandler}>save</button>
+                  <button className='btn btn-danger' onClick={cancelHandler} style={{marginLeft:"10px"}}>cancel</button>
+                </form>
+              </div>
+            </div>
+          </div>  
+      </div>
+
+    )
+  }
+
+step44:
+-------
+	Now Add employee data and check it is showing in the employee list.
+
+
+step45:
+--------
+	Now create get employee by id  rest api in spring boot.
+
+EmployeeController.java
+------------------------
+package com.ihub.www.controller;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.ihub.www.model.Employee;
+import com.ihub.www.service.EmployeeService;
+
+import jakarta.websocket.server.PathParam;
+
+@CrossOrigin(origins = "http://localhost:3000")
+@RestController
+@RequestMapping("/api/v1/")
+public class EmployeeController 
+{
+	@Autowired
+	EmployeeService employeeService;
+	
+	@GetMapping("/employees")
+	public List<Employee> getAllEmployees()
+	{
+		return employeeService.getAllEmployees();
+	}
+	
+	@PostMapping("/employees")
+	public Employee createEmployee(@RequestBody Employee employee)
+	{
+		return employeeService.createEmployee(employee);
+	}
+	
+	@GetMapping("/employees/{id}")
+	public Employee getEmployeeById(@PathVariable Long id)
+	{
+		return employeeService.getEmployeeById(id);
+	}
+}
+
+EmployeeService.java
+--------------------
+package com.ihub.www.service;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.ihub.www.exception.ResourceNotFoundException;
+import com.ihub.www.model.Employee;
+import com.ihub.www.repo.EmployeeRepository;
+
+@Service
+public class EmployeeService 
+{
+	@Autowired
+	EmployeeRepository employeeRepository;
+	
+	public List<Employee> getAllEmployees()
+	{
+		return employeeRepository.findAll();
+	}
+	
+	public Employee createEmployee(Employee employee)
+	{
+		return employeeRepository.save(employee);
+	}
+	public Employee getEmployeeById(Long id)
+	{
+		return employeeRepository.findById(id).orElseThrow(()-> new ResourceNotFoundException("Id Not Found"));
+	}
+}
+
+step46:
+------
+	Now create update employee  rest api.
+
+EmployeeController.java
+----------------------
+package com.ihub.www.controller;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.ihub.www.model.Employee;
+import com.ihub.www.service.EmployeeService;
+
+@CrossOrigin(origins = "http://localhost:3000")
+@RestController
+@RequestMapping("/api/v1/")
+public class EmployeeController 
+{
+	@Autowired
+	EmployeeService employeeService;
+	
+	@GetMapping("/employees")
+	public List<Employee> getAllEmployees()
+	{
+		return employeeService.getAllEmployees();
+	}
+	
+	@PostMapping("/employees")
+	public Employee createEmployee(@RequestBody Employee employee)
+	{
+		return employeeService.createEmployee(employee);
+	}
+	
+	@GetMapping("/employees/{id}")
+	public Employee getEmployeeById(@PathVariable Long id)
+	{
+		return employeeService.getEmployeeById(id);
+	}
+	
+	@PutMapping("/employees/{id}")
+	public ResponseEntity<Employee> updateEmployee(@PathVariable Long id,@RequestBody Employee employee)
+	{
+		return employeeService.updateEmployee(id,employee);
+	}
+}
+
+
+EmployeeService.java
+-------------------
+package com.ihub.www.service;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+
+import com.ihub.www.exception.ResourceNotFoundException;
+import com.ihub.www.model.Employee;
+import com.ihub.www.repo.EmployeeRepository;
+
+@Service
+public class EmployeeService 
+{
+	@Autowired
+	EmployeeRepository employeeRepository;
+	
+	public List<Employee> getAllEmployees()
+	{
+		return employeeRepository.findAll();
+	}
+	
+	public Employee createEmployee(Employee employee)
+	{
+		return employeeRepository.save(employee);
+	}
+	public Employee getEmployeeById(Long id)
+	{
+		return employeeRepository.findById(id).orElseThrow(()-> new ResourceNotFoundException("Id Not Found"));
+	}
+	public ResponseEntity<Employee> updateEmployee(Long id,Employee employee)
+	{
+		Employee emp=employeeRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Employee Does not exist"));
+		emp.setFirstName(employee.getFirstName());
+		emp.setLastName(employee.getLastName());
+		emp.setEmail(employee.getEmail());
+		Employee updateEmp=employeeRepository.save(emp);
+		return ResponseEntity.ok(updateEmp);
+	}
+}
+
+
+step47:
+------
+	Create react UpdateEmployeeComponent.js file inside "components" folder.
+
+UpdateEmployeeComponent.js
+--------------------------
+
+import React, { Component, useEffect } from 'react'
+import { useState} from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import EmployeeService from '../services/EmployeeService';
+
+
+
+export default function UpdateEmployeeComponent(props)
+{
+  
+    let navigate = useNavigate();
+   
+
+    const [firstName,setFirstName]=useState("");
+    const [lastName,setLastName]=useState("");
+    const [email,setEmail]=useState("");
+    const {id}= useParams();
+
+
+
+  useEffect(()=>
+  {
+    EmployeeService.getEmployeeById(id).then((res)=>
+    {
+        setFirstName(res.data.firstName);
+        setLastName(res.data.lastName);
+        setEmail(res.data.email);
+
+    }).catch(error=>
+        {
+            console.log(error);
+        })
+
+  },[])
+
+ 
+ const updateHandler=(e)=>
+ {
+    e.preventDefault();
+    const employee={firstName,lastName,email};
+    
+    if(id){
+           EmployeeService.updateEmployee(id,employee).then(res=>{
+            navigate('/employees');
+           }); 
+    }
+    else{    
+            EmployeeService.createEmployee(employee).then(res=>
+            {
+            console.log(res.data);
+            navigate('/employees');
+
+        })
+    }
+ }
+  
+  const cancelHandler=(e)=>
+  {
+    navigate('/employees');
+  }
+ 
+  
+    return (
+      <div className="container mt-3">
+          <div className="row">
+            <div className="card col-md-6 offset-md-3 offset-md-3">
+              <h3 className="text-center">Update Employee</h3>
+              <div className="card-body">
+                <form>
+                  <div className="form-group my-2">
+                    <label>First Name:</label>
+                    <input placeholder="First Name" name="firstName" className="form-control"
+                           value={firstName} onChange={(e)=> setFirstName(e.target.value)}/>
+                  </div>
+                  <div className="form-group my-2">
+                    <label>Last Name:</label>
+                    <input placeholder="Last Name" name="lastName" className="form-control"
+                           value={lastName} onChange={(e)=> setLastName(e.target.value)}/>
+                  </div>
+
+                  <div className="form-group my-2">
+                    <label>Email:</label>
+                    <input placeholder="Email" name="email" className="form-control"
+                           value={email} onChange={(e)=> setEmail(e.target.value)}/>
+                  </div>
+                  <button className='btn btn-success' onClick={updateHandler}>save</button>
+                  <button className='btn btn-danger' onClick={cancelHandler} style={{marginLeft:"10px"}}>cancel</button>
+                </form>
+              </div>
+            </div>
+          </div>  
+      </div>
+
+    )
+  }
+
+
+
+step48:
+----
+	
+	Now connect React to update Employee component.
+
+ EmployeeService.js
+----------------------
+import axios from 'axios';
+
+const EMPLOYEE_API_BASE_URL="http://localhost:9090/api/v1/employees";
+
+class EmployeeService{
+
+    getEmployees(){
+        return axios.get(EMPLOYEE_API_BASE_URL);
+    }
+
+    createEmployee(employee)
+    {
+         return axios.post(EMPLOYEE_API_BASE_URL,employee);   
+    }
+
+    getEmployeeById(employeeId)
+    {
+        return axios.get(EMPLOYEE_API_BASE_URL+'/'+employeeId);
+    }
+
+    updateEmployee(employeeId,employee)
+    {
+        return axios.put(EMPLOYEE_API_BASE_URL+'/'+employeeId,employee);
+    }
+}
+export default new EmployeeService();
+
+
+step47:
+------
+	Create react UpdateEmployeeComponent.js file inside "components" folder.
+
+UpdateEmployeeComponent.js
+--------------------------
+
+import React, { Component, useEffect } from 'react'
+import { useState} from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import EmployeeService from '../services/EmployeeService';
+
+
+
+export default function UpdateEmployeeComponent(props)
+{
+  
+    let navigate = useNavigate();
+   
+
+    const [firstName,setFirstName]=useState("");
+    const [lastName,setLastName]=useState("");
+    const [email,setEmail]=useState("");
+    const {id}= useParams();
+
+
+
+  useEffect(()=>
+  {
+    EmployeeService.getEmployeeById(id).then((res)=>
+    {
+        setFirstName(res.data.firstName);
+        setLastName(res.data.lastName);
+        setEmail(res.data.email);
+
+    }).catch(error=>
+        {
+            console.log(error);
+        })
+
+  },[])
+
+ 
+ const updateHandler=(e)=>
+ {
+    e.preventDefault();
+    const employee={firstName,lastName,email};
+    
+    if(id){
+           EmployeeService.updateEmployee(id,employee).then(res=>{
+            navigate('/employees');
+           }); 
+    }
+    else{    
+            EmployeeService.createEmployee(employee).then(res=>
+            {
+            console.log(res.data);
+            navigate('/employees');
+
+        })
+    }
+ }
+  
+  const cancelHandler=(e)=>
+  {
+    navigate('/employees');
+  }
+ 
+  
+    return (
+      <div className="container mt-3">
+          <div className="row">
+            <div className="card col-md-6 offset-md-3 offset-md-3">
+              <h3 className="text-center">Update Employee</h3>
+              <div className="card-body">
+                <form>
+                  <div className="form-group my-2">
+                    <label>First Name:</label>
+                    <input placeholder="First Name" name="firstName" className="form-control"
+                           value={firstName} onChange={(e)=> setFirstName(e.target.value)}/>
+                  </div>
+                  <div className="form-group my-2">
+                    <label>Last Name:</label>
+                    <input placeholder="Last Name" name="lastName" className="form-control"
+                           value={lastName} onChange={(e)=> setLastName(e.target.value)}/>
+                  </div>
+
+                  <div className="form-group my-2">
+                    <label>Email:</label>
+                    <input placeholder="Email" name="email" className="form-control"
+                           value={email} onChange={(e)=> setEmail(e.target.value)}/>
+                  </div>
+                  <button className='btn btn-success' onClick={updateHandler}>save</button>
+                  <button className='btn btn-danger' onClick={cancelHandler} style={{marginLeft:"10px"}}>cancel</button>
+                </form>
+              </div>
+            </div>
+          </div>  
+      </div>
+
+    )
+  }
+
+
+
+step48:
+----
+	Add the UpdateEmployeeComponent to routing file inside App.js file.
+
+App.js
+-------
+import logo from './logo.svg';
+import './App.css';
+import ListEmployeeComponent from './components/ListEmployeeComponent'
+import HeaderComponent from './components/HeaderComponent';
+import FooterComponent from './components/FooterComponent';
+import { BrowserRouter as Router,Route,Routes,Link } from 'react-router-dom';
+import CreateEmployeeComponent from './components/CreateEmployeeComponent';
+import UpdateEmployeeComponent from './components/UpdateEmployeeComponent';
+
+function App() {
+  return (
+    <div>
+     <Router>
+      <HeaderComponent/>
+      <div className="container">
+        <Routes>
+            <Route exact path="/" element={<ListEmployeeComponent/>}></Route>
+            <Route path="/employees" element={<ListEmployeeComponent/>}></Route>
+            <Route path="/add-employee" element={<CreateEmployeeComponent/>}></Route>
+            <Route path="/update-employee/:id" element={<UpdateEmployeeComponent/>}></Route>
+        </Routes>
+      </div>
+
+      <FooterComponent/>
+    
+    </Router> 
+
+    </div>
+  );
+}
+
+export default App;
+
+
+step49:
+--------
+	Add actions in ListEmployeeComponent.js file.
+
+ListEmployeeComponent.js
+-------------------------
+import React, { Component } from 'react'
+import EmployeeService from '../services/EmployeeService';
+import {Link } from 'react-router-dom';
+export default class ListEmployeeComponent extends Component {
+
+     
+
+    constructor(props)
+    {
+        super(props);
+
+        this.state={
+            employees:[]
+        }
+     
+    }
+  
+  
+
+    componentDidMount(){
+        EmployeeService.getEmployees().then((res)=>
+        {
+            this.setState({employees:res.data})
+        })
+    }
+
+
+  render() {
+    return (
+      <div>
+            <h2 className='text-center'>Employee List</h2>
+
+          
+            <div className='row'>       
+            <Link to="/add-employee" className='btn btn-outline-primary mt-4 w-100'>Add Employee</Link>    
+   
+                <table className='table  table-striped table-bordered'>
+                    <thead>
+                        <tr>
+                          
+                            <th>FirstName</th>
+                            <th>LastName</th>
+                            <th>Email</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {
+                            this.state.employees.map(
+                                employee=>
+                                <tr key={employee.id}>
+                                      <td>{employee.firstName}</td>
+                                      <td>{employee.lastName}</td>
+                                      <td>{employee.email}</td> 
+                                      <td>
+                                         
+                  <Link to="/update-employee/1" className="btn btn-info" >update</Link>  
+                                          
+                                      </td> 
+                                </tr>
+                            )
+                        }
+                    </tbody>
+                </table>
+            </div>        
+      </div>
+    )
+  }
+}
+
+step50:
+------
+	Now connect React to update Employee component.
+
+ EmployeeService.js
+----------------------
+import axios from 'axios';
+
+const EMPLOYEE_API_BASE_URL="http://localhost:9090/api/v1/employees";
+
+class EmployeeService{
+
+    getEmployees(){
+        return axios.get(EMPLOYEE_API_BASE_URL);
+    }
+
+    createEmployee(employee)
+    {
+         return axios.post(EMPLOYEE_API_BASE_URL,employee);   
+    }
+
+    getEmployeeById(employeeId)
+    {
+        return axios.get(EMPLOYEE_API_BASE_URL+'/'+employeeId);
+    }
+
+    updateEmployee(employeeId,employee)
+    {
+        return axios.put(EMPLOYEE_API_BASE_URL+'/'+employeeId,employee);
+    }
+}
+export default new EmployeeService();
+
+step51:
+------
+	Build Delete employee REST API.
+
+EmployeeController.java
+----------------------
+package com.ihub.www.controller;
+
+package com.ihub.www.controller;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.ihub.www.model.Employee;
+import com.ihub.www.service.EmployeeService;
+
+@CrossOrigin(origins = "http://localhost:3000")
+@RestController
+@RequestMapping("/api/v1/")
+public class EmployeeController 
+{
+	@Autowired
+	EmployeeService employeeService;
+	
+	@GetMapping("/employees")
+	public List<Employee> getAllEmployees()
+	{
+		return employeeService.getAllEmployees();
+	}
+	
+	@PostMapping("/employees")
+	public Employee createEmployee(@RequestBody Employee employee)
+	{
+		return employeeService.createEmployee(employee);
+	}
+	
+	@GetMapping("/employees/{id}")
+	public Employee getEmployeeById(@PathVariable Long id)
+	{
+		return employeeService.getEmployeeById(id);
+	}
+	
+	@PutMapping("/employees/{id}")
+	public ResponseEntity<Employee> updateEmployee(@PathVariable Long id,@RequestBody Employee employee)
+	{
+		return employeeService.updateEmployee(id,employee);
+	}
+	
+	@DeleteMapping("/employees/{id}")
+	public ResponseEntity<HttpStatus> deleteEmployee(@PathVariable long id)
+	{
+		return employeeService.deleteEmployee(id);
+		
+	}
+}
+
+
+
+EmployeeService.java
+-------------------
+package com.ihub.www.service;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+
+import com.ihub.www.exception.ResourceNotFoundException;
+import com.ihub.www.model.Employee;
+import com.ihub.www.repo.EmployeeRepository;
+
+@Service
+public class EmployeeService 
+{
+	@Autowired
+	EmployeeRepository employeeRepository;
+	
+	public List<Employee> getAllEmployees()
+	{
+		return employeeRepository.findAll();
+	}
+	
+	public Employee createEmployee(Employee employee)
+	{
+		return employeeRepository.save(employee);
+	}
+	public Employee getEmployeeById(Long id)
+	{
+		return employeeRepository.findById(id).orElseThrow(()-> new ResourceNotFoundException("Id Not Found"));
+	}
+	public ResponseEntity<Employee> updateEmployee(Long id,Employee employee)
+	{
+		Employee emp=employeeRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Employee Does not exist"));
+		emp.setFirstName(employee.getFirstName());
+		emp.setLastName(employee.getLastName());
+		emp.setEmail(employee.getEmail());
+		Employee updateEmp=employeeRepository.save(emp);
+		return ResponseEntity.ok(updateEmp);
+	}
+	
+	public ResponseEntity<HttpStatus> deleteEmployee(long id)
+	{
+		Employee employee=employeeRepository.findById(id).orElseThrow(()->new ResourceNotFoundException("Employee Does not Exit"));
+		employeeRepository.delete(employee);
+		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+	}
+}
+
+
+step52:
+-------
+	Now connect react with delete component.
+
+EmployeeService.js
+-----------------
+import axios from 'axios';
+
+const EMPLOYEE_API_BASE_URL="http://localhost:9090/api/v1/employees";
+
+class EmployeeService{
+
+    getEmployees(){
+        return axios.get(EMPLOYEE_API_BASE_URL);
+    }
+
+    createEmployee(employee)
+    {
+         return axios.post(EMPLOYEE_API_BASE_URL,employee);   
+    }
+
+    getEmployeeById(employeeId)
+    {
+        return axios.get(EMPLOYEE_API_BASE_URL+'/'+employeeId);
+    }
+
+    updateEmployee(employeeId,employee)
+    {
+        return axios.put(EMPLOYEE_API_BASE_URL+'/'+employeeId,employee);
+    }
+
+    deleteEmployee(employeeId)
+    {
+          return axios.delete(EMPLOYEE_API_BASE_URL+'/'+employeeId);  
+    }
+}
+export default new EmployeeService();
+
+step53
+-------
+	Now Add delete action in ListEmployeeComponent.js file.
+
+ListEmployeeComponent.js
+---------------------------
+import React, { Component } from 'react'
+import EmployeeService from '../services/EmployeeService';
+import {Link } from 'react-router-dom';
+export default class ListEmployeeComponent extends Component {
+
+     
+
+    constructor(props)
+    {
+        super(props);
+
+        this.state={
+            employees:[]
+        }
+     
+    }
+  
+  
+
+    componentDidMount(){
+        EmployeeService.getEmployees().then((res)=>
+        {
+            this.setState({employees:res.data})
+        })
+    }
+
+    deleteEmployee=(employeeId)=>
+    {
+        EmployeeService.deleteEmployee(employeeId).then(res=>
+            {
+                EmployeeService.getEmployees().then((res)=>
+                {
+                    this.setState({employees:res.data})
+                }) 
+
+            }).catch(error=>
+                {
+                    console.log(error);
+                })
+    }
+  render() {
+    return (
+      <div>
+            <h2 className='text-center'>Employee List</h2>
+
+          
+            <div className='row'>       
+            <Link to="/add-employee" className='btn btn-outline-primary mt-4 w-100'>Add Employee</Link>    
+   
+                <table className='table  table-striped table-bordered'>
+                    <thead>
+                        <tr>
+                          
+                            <th>FirstName</th>
+                            <th>LastName</th>
+                            <th>Email</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {
+                            this.state.employees.map(
+                                employee=>
+                                <tr key={employee.id}>
+                                      <td>{employee.firstName}</td>
+                                      <td>{employee.lastName}</td>
+                                      <td>{employee.email}</td> 
+                                      <td>
+                                         
+                                          <Link to="/update-employee/1" className="btn btn-info" >update</Link>  
+                                          <button className='btn btn-danger' style={{marginLeft:"15px"}} onClick={()=> this.deleteEmployee(employee.id)}>Delete</button>
+                                      </td> 
+                                </tr>
+                            )
+                        }
+                    </tbody>
+                </table>
+            </div>        
+      </div>
+    )
+  }
+}
+
+
